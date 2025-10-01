@@ -13,7 +13,7 @@
 ---
 
 ## Target
-- IP: `10.201.74.172` (exported as an environment variable for convenience)
+IP: `10.201.74.172` (exported as an environment variable for convenience)
 ```bash
 # Set target IP for easier command reuse
 export IP=10.201.74.172
