@@ -1,4 +1,5 @@
 # TryHackMe — Blue WriteUp
+<img width="1063" height="699" alt="image" src="https://github.com/user-attachments/assets/3d612c0f-9ebd-478d-ad42-298d25cb1c01" />
 
 **Room**: [Blue](https://tryhackme.com/room/blue) <br>
 **Category**: Exploitation of SMB & Windows <br>
