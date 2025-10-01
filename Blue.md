@@ -3,7 +3,7 @@
 
 **Room**: [Blue](https://tryhackme.com/room/blue) <br>
 **Category**: Exploitation of SMB & Windows <br>
-**Description**: Demonstrate exploitation of MS17-010 (EternalBlue) on a vulnerable Windows host. 
+**Description**: Demonstrate EternalBlue exploitation on a vulnerable Windows host.
 
 ---
 
